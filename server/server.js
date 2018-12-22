@@ -19,14 +19,14 @@ app.set('title', 'JPans Chat App');
 io.on('connection', (socket) => { // socket argument similar to socket var over in html
   console.log('new user connected');
 
-  socket.emit('newMessage', {
-    from: 'mike@example.com',
-    text: 'hey. what is going on',
-    createdAt: 123
-  });
-
   socket.on('createMessage', (message) => {
     console.log('createMessage:', message);
+
+    io.emit('newMessage', {
+      from: message.from,
+      test: message.text,
+      createdAt: new Date().getTime()
+    })
   });
 
   socket.on('disconnect', () => {
