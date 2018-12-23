@@ -7,6 +7,7 @@ const socketIO = require('socket.io');
 // Set up constants
 const publicPath = path.join(__dirname, '../public'); // build a path that we can pass into express middleware. aviods .. popping up in path
 const port = process.env.PORT || 3000;
+const {generateMessage} = require('./utils/message');
 
 // Set up express app
 var app = express();
@@ -19,17 +20,10 @@ app.set('title', 'JPans Chat App');
 io.on('connection', (socket) => { // socket argument similar to socket var over in html
   console.log('new user connected');
 
-  socket.emit('newUserWelcome', {
-    text: 'welcome new user, from admin',
-    from: 'Admin',
-    createdAt: new Date().getTime()
-  });
+  socket.emit('newUserWelcome', generateMessage('Admin', 'welcome to the chat app'));
 
-  socket.broadcast.emit('newUserAnnouncement', {
-    text: 'welcome new user, to all',
-    createdAt: new Date().getTime()
-  });
-  
+  socket.broadcast.emit('newUserAnnouncement', generateMessage('Admin', 'new user joined'));
+
   // socket.emit to user who joined from admin
   // text should say "welcome to the chat app"
   // call socket.broadcast.emit to everyone but user who joined
@@ -38,6 +32,7 @@ io.on('connection', (socket) => { // socket argument similar to socket var over 
 
   socket.on('createMessage', (message) => {
     console.log('createMessage:', message);
+    io.emit('newMessage', generateMessage(message.from, message.text));
     // io.emit('newMessage', {
     //   from: message.from,
     //   test: message.text,
