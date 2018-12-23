@@ -6,7 +6,22 @@
   </head>
   <body>
     <p>Welcome to the chat app</p>
+<!-- render messages in ordered list -->
+    <ol id="messages">
+
+    </ol>
+
+  <!-- message input goes here  -->
+    <form id="message-form">
+      <input name="message" type="text" placeholder="Message"/>
+      <button>Send</button>
+    </form>
+
+    <!--  load in socket io -->
     <script src="/socket.io/socket.io.js" charset="utf-8"></script>
+    <!-- load in locally sourced jquery library -->
+    <script src="/js/libs/jquery-3.3.1.min.js" charset="utf-8"></script>
+    <!-- load in local index.js, which contains javascript to run on this page -->
     <script src="/js/index.js">
 
     </script>

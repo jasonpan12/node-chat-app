@@ -20,9 +20,9 @@ app.set('title', 'JPans Chat App');
 io.on('connection', (socket) => { // socket argument similar to socket var over in html
   console.log('new user connected');
 
-  socket.emit('newUserWelcome', generateMessage('Admin', 'welcome to the chat app'));
+  socket.emit('newMessage', generateMessage('Admin', 'welcome to the chat app'));
 
-  socket.broadcast.emit('newUserAnnouncement', generateMessage('Admin', 'new user joined'));
+  socket.broadcast.emit('newMessage', generateMessage('Admin', 'new user joined'));
 
   // socket.emit to user who joined from admin
   // text should say "welcome to the chat app"
@@ -30,9 +30,10 @@ io.on('connection', (socket) => { // socket argument similar to socket var over 
   // text to say new user joined
 
 
-  socket.on('createMessage', (message) => {
+  socket.on('createMessage', (message, callback) => {
     console.log('createMessage:', message);
     io.emit('newMessage', generateMessage(message.from, message.text));
+    callback('This is from the server'); // call callback to let client know server ack'd the request
     // io.emit('newMessage', {
     //   from: message.from,
     //   test: message.text,
