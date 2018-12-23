@@ -19,14 +19,37 @@ app.set('title', 'JPans Chat App');
 io.on('connection', (socket) => { // socket argument similar to socket var over in html
   console.log('new user connected');
 
+  socket.emit('newUserWelcome', {
+    text: 'welcome new user, from admin',
+    from: 'Admin',
+    createdAt: new Date().getTime()
+  });
+
+  socket.broadcast.emit('newUserAnnouncement', {
+    text: 'welcome new user, to all',
+    createdAt: new Date().getTime()
+  });
+  
+  // socket.emit to user who joined from admin
+  // text should say "welcome to the chat app"
+  // call socket.broadcast.emit to everyone but user who joined
+  // text to say new user joined
+
+
   socket.on('createMessage', (message) => {
     console.log('createMessage:', message);
+    // io.emit('newMessage', {
+    //   from: message.from,
+    //   test: message.text,
+    //   createdAt: new Date().getTime()
+    // });
 
-    io.emit('newMessage', {
-      from: message.from,
-      test: message.text,
-      createdAt: new Date().getTime()
-    })
+    // socket.broadcast.emit('newMessage', {
+    //   from: message.from,
+    //   text: message.text,
+    //   createdAt: new Date().getTime()
+    // });
+
   });
 
   socket.on('disconnect', () => {

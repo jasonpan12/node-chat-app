@@ -17,3 +17,10 @@ socket.on('disconnect', function(){
 socket.on('newEmail', function(email) { // email comes from socket.emit
   console.log('New Email', email);
 });
+
+socket.on('newUserWelcome', function(message){
+  console.log('Message: ', message);
+});
+socket.on('newUserAnnouncement', function(message){
+  console.log('Message: ', message);
+});
