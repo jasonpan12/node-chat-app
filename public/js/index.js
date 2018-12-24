@@ -7,22 +7,25 @@ socket.on('connect', function(){
 });
 
 socket.on('newMessage', function(message) {
-  console.log('newMessage:', message);
+  // console.log('newMessage:', message);
 
+  // use moment to format createdAt time from message (passed from server)
+  var formattedTime = moment(message.createdAt).format('h:mm a');
   // create list item to receive new messages
-  // create elementt with jquery
+  // create element with jquery
   var li = jQuery('<li></li>');
-  li.text(`${message.from}: ${message.text}`);
+  li.text(`${message.from} ${formattedTime}: ${message.text}`);
 
   // select messages object and append new message to end of list
   jQuery('#messages').append(li);
 });
 
 socket.on('newLocationMessage', function(message) {
+  var formattedTime = moment(message.createdAt).format('h:mm a');
   var li = jQuery('<li></li>');
   var a = jQuery('<a target="_blank">My current location</a>'); // _blank means open in new tab
 
-  li.text(`${message.from}: `);
+  li.text(`${message.from} ${formattedTime}: `);
   a.attr('href', message.url); // set properties on object - href specifically
   li.append(a);
   jQuery('#messages').append(li);
