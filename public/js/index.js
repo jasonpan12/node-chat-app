@@ -9,26 +9,27 @@ socket.on('connect', function(){
 socket.on('newMessage', function(message) {
   // console.log('newMessage:', message);
 
-  // use moment to format createdAt time from message (passed from server)
   var formattedTime = moment(message.createdAt).format('h:mm a');
-  // create list item to receive new messages
-  // create element with jquery
-  var li = jQuery('<li></li>');
-  li.text(`${message.from} ${formattedTime}: ${message.text}`);
+  var template = jQuery("#message-template").html();
+  var html = Mustache.render(template, { // pass value into template used by mustache
+    text: message.text,
+    from: message.from,
+    createdAt: formattedTime
+  });
 
-  // select messages object and append new message to end of list
-  jQuery('#messages').append(li);
+  jQuery('#messages').append(html);
 });
 
 socket.on('newLocationMessage', function(message) {
   var formattedTime = moment(message.createdAt).format('h:mm a');
-  var li = jQuery('<li></li>');
-  var a = jQuery('<a target="_blank">My current location</a>'); // _blank means open in new tab
-
-  li.text(`${message.from} ${formattedTime}: `);
-  a.attr('href', message.url); // set properties on object - href specifically
-  li.append(a);
-  jQuery('#messages').append(li);
+  var template = jQuery("#location-message-template").html();
+  var html = Mustache.render(template, { // pass value into template used by mustache
+    text: message.text,
+    from: message.from,
+    createdAt: formattedTime,
+    url: message.url
+  });
+  jQuery('#messages').append(html);
 
 })
 socket.on('disconnect', function(){
