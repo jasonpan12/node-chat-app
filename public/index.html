@@ -4,20 +4,32 @@
     <meta charset="utf-8">
     <title></title>
   </head>
-  <body>
-    <p>Welcome to the chat app</p>
+  <link rel="stylesheet" href="/css/styles.css">
+
+  <body class="chat">
+    <div class="chat__sidebar">
+      <h3>People</h3>
+      <div id="users">
+
+      </div>
+    </div>
+
+    <div class="chat__main">
+      <ol id="messages" class="chat__messages">
+      </ol>
+
+      <div class="chat__footer">
+        <!-- message input goes here  -->
+
+        <form id="message-form">
+          <input name="message" type="text" placeholder="Message" autofocus autocomplete="off"/>
+          <button>Send</button>
+        </form>
+
+        <button id="send-location">Send location</button>
+      </div>
+    </div>
 <!-- render messages in ordered list -->
-    <ol id="messages">
-
-    </ol>
-
-  <!-- message input goes here  -->
-    <form id="message-form">
-      <input name="message" type="text" placeholder="Message"/>
-      <button>Send</button>
-    </form>
-
-    <button id="send-location">Send Location</button>
 
     <!--  load in socket io. this path is available when socket is installed
     e.g. localhost:3000/socket.io/socket.io.js-->
