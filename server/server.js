@@ -16,6 +16,8 @@ var io = socketIO(server); // add socket into http
 
 app.use(express.static(publicPath));
 app.set('title', 'JPans Chat App');
+// app.set('view engine', 'html');
+
 
 io.on('connection', (socket) => { // socket argument similar to socket var over in html
   console.log('new user connected');

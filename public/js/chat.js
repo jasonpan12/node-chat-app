@@ -15,7 +15,7 @@ function scrollToBottom() { // will be called for every message
   var lastMessageHeight = newMessage.prev().innerHeight();
 
   if (clientHeight + scrollTop + newMessageHeight + lastMessageHeight>= scrollHeight) {
-    messages.scrollTop(scrollHeight);
+    messages.scrollTop(scrollHeight); // setting scrolltop to scrollheight pushes clientheight down to zero, i.e. putting user to bottom
   }
 }
 socket.on('connect', function(){
