@@ -18,6 +18,16 @@ socket.on('newMessage', function(message) {
   jQuery('#messages').append(li);
 });
 
+socket.on('newLocationMessage', function(message) {
+  var li = jQuery('<li></li>');
+  var a = jQuery('<a target="_blank">My current location</a>'); // _blank means open in new tab
+
+  li.text(`${message.from}: `);
+  a.attr('href', message.url); // set properties on object - href specifically
+  li.append(a);
+  jQuery('#messages').append(li);
+
+})
 socket.on('disconnect', function(){
   console.log('Disconnected from server');
 });
@@ -26,12 +36,12 @@ socket.on('newEmail', function(email) { // email comes from socket.emit
   console.log('New Email', email);
 });
 
-socket.emit('createMessage', {
-  from:'frank',
-  text:'hi'
-}, function (data) {
-  console.log('got it', data);// add acknowledgement
-});
+// socket.emit('createMessage', {
+//   from:'frank',
+//   text:'hi'
+// }, function (data) {
+//   console.log('got it', data);// add acknowledgement
+// });
 
 // use jquery to attach a listener to an... object
 jQuery('#message-form').on('submit', function (e) { // do something with the event
@@ -44,4 +54,20 @@ jQuery('#message-form').on('submit', function (e) { // do something with the eve
   }, function() {
 
   })
+});
+
+var locationButton = jQuery('#send-location');
+locationButton.on('click', function () {
+  if (!navigator.geolocation) { // if geolocation object doesn't exist
+    return alert('Geolocation not supported by your browser');
+  }
+
+  navigator.geolocation.getCurrentPosition(function (position) {
+    socket.emit('createLocationMessage', {
+      latitude: position.coords.latitude,
+      longitude: position.coords.longitude
+    })
+  }, function () {
+    alert('Unable to fetch location');
+  });
 });
