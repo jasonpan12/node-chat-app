@@ -19,7 +19,15 @@ function scrollToBottom() { // will be called for every message
   }
 }
 socket.on('connect', function(){
-  console.log('Connected to server');
+  var params = jQuery.deparam(window.location.search);
+  socket.emit('join', params, function (err) {
+    if (err) { // show error if it exists, and redirect back to join page
+      alert(err);
+      window.location.href = '/';
+    } else {
+      console.log('no error');
+    }
+  });
 });
 
 socket.on('newMessage', function(message) {
@@ -52,6 +60,18 @@ socket.on('newLocationMessage', function(message) {
 })
 socket.on('disconnect', function(){
   console.log('Disconnected from server');
+});
+
+socket.on('updateUserList', function(users) {
+  console.log('Users.list', users);
+
+  // create a new list each time this is called
+  var oL = jQuery('<ol></ol>');
+  users.forEach(function (user) { // loop over entire user population in user class
+    oL.append(jQuery('<li></li>').text(user));
+  });
+  // display the ordered list in the users div
+  jQuery('#users').html(oL);
 });
 
 socket.on('newEmail', function(email) { // email comes from socket.emit

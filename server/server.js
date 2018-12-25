@@ -8,11 +8,14 @@ const socketIO = require('socket.io');
 const publicPath = path.join(__dirname, '../public'); // build a path that we can pass into express middleware. aviods .. popping up in path
 const port = process.env.PORT || 3000;
 const {generateMessage, generateLocationMessage} = require('./utils/message');
+const {isRealString} = require('./utils/validation');
+const {Users} = require('./utils/users');
 
 // Set up express app
 var app = express();
 var server = http.createServer(app); // pass express into http
 var io = socketIO(server); // add socket into http
+var users = new Users();
 
 app.use(express.static(publicPath));
 app.set('title', 'JPans Chat App');
@@ -21,11 +24,6 @@ app.set('title', 'JPans Chat App');
 
 io.on('connection', (socket) => { // socket argument similar to socket var over in html
   console.log('new user connected');
-
-  socket.emit('newMessage', generateMessage('Admin', 'welcome to the chat app'));
-
-  socket.broadcast.emit('newMessage', generateMessage('Admin', 'new user joined'));
-
   // socket.emit to user who joined from admin
   // text should say "welcome to the chat app"
   // call socket.broadcast.emit to everyone but user who joined
@@ -38,13 +36,38 @@ io.on('connection', (socket) => { // socket argument similar to socket var over 
     callback('This is from the server'); // call callback to let client know server ack'd the request
   });
 
-socket.on('createLocationMessage', (coords) => {
+  socket.on('join', (params, callback) => {
+  // make sure they're all real strings
+  if (!isRealString(params.name) || !isRealString(params.room)) {
+    return callback('name and room name are required');
+  }
 
-  io.emit('newLocationMessage', generateLocationMessage('Admin', coords.latitude, coords.longitude))
-});
+  socket.join(params.room);
+  users.removeUser(socket.id); // remove if they were already in a diff room
+  users.addUser(socket.id, params.name, params.room);
 
-socket.on('disconnect', () => {
-    console.log('user disconnected');
+  io.to(params.room).emit('updateUserList', users.getUserList(params.room));
+  // socket.leave('The Office Fans');
+// io.to(params.room).emit
+// socket.broadcast.to(params.room).emit
+
+
+  socket.emit('newMessage', generateMessage('Admin', 'welcome to the chat app'));
+  socket.broadcast.to(params.room).emit('newMessage', generateMessage('Admin', `${params.name} has joined`));
+  callback(); // call callback w/ no args, meaning no err
+  });
+
+  socket.on('createLocationMessage', (coords) => {
+
+    io.emit('newLocationMessage', generateLocationMessage('Admin', coords.latitude, coords.longitude))
+  });
+
+  socket.on('disconnect', () => {
+    var user = users.removeUser(socket.id);
+    if (user) { // will return a user if removal was successful/actually occurred
+      io.to(user.room).emit('updateUserList', users.getUserList(user.room));
+      io.to(user.room).emit('newMessage', generateMessage('Admin', `${user.name} has left`));
+    }
   });
 });
 
