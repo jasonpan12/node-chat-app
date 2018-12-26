@@ -67,7 +67,7 @@ socket.on('updateUserList', function(users) {
 
   // create a new list each time this is called
   var oL = jQuery('<ol></ol>');
-  users.forEach(function (user) { // loop over entire user population in user class
+  users.forEach(function (user) { // loop over entire user population in user class each time
     oL.append(jQuery('<li></li>').text(user));
   });
   // display the ordered list in the users div
